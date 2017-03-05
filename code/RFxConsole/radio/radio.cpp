@@ -28,6 +28,63 @@ const int rf_nodeid = 28;
 
 const bool verbose = true;
 
+
+volatile int external2;
+volatile int external3;
+volatile int millis2;
+volatile int millis3;
+volatile int timer;
+volatile bool flagT;
+volatile uint32_t time;
+volatile uint16_t RssiSync;
+
+extern "C" void exti2_isr(void)			//ISR function 
+/*
+
+File github/libopencm3/lib/stm32/f1/vector_nvic.c has a weak link to a blocking handler:
+#pragma weak exti2_isr = blocking_handler
+The above weak link is by default built into the IRQ_HANDLERS table by
+    [NVIC_EXTI2_IRQ] = exti2_isr, \
+this effectively handles the interrupt with the blocking handler.
+The extern "C" definition above overrides the weak link and thereby causes our
+our interrupt handler below to be linked into the IRQ_HANDLERS table:
+
+*/
+{
+      if((EXTI_PR & EXTI2) != 0)   		//Check if PB9 has triggered the interrupt
+      {                                 
+        EXTI_PR |= EXTI2;				//Clear PA2
+		timer_enable_counter(TIM3);
+        external2++;
+      }
+
+}
+
+extern "C" void exti3_isr(void)			//ISR function 
+{
+      if((EXTI_PR & EXTI3) != 0)   		//Check if PA3 has triggered the interrupt
+      {                                 
+        EXTI_PR |= EXTI3;				//Clear PA3
+		timer_disable_counter(TIM3);
+		RssiSync = timer_get_counter(TIM3);
+		timer_set_counter(TIM3, 0);
+        external3++;
+      }
+
+}
+
+extern "C" void tim3_isr(void)
+{
+	TIM_SR(TIM3) &= ~TIM_SR_UIF;
+	rf.setMode(0<<2);// Sleep
+	rf.setMode(4<<2);// Receive
+	flagT = true;
+	timer_disable_counter(TIM3);
+	RssiSync = timer_get_counter(TIM3);
+	timer_set_counter(TIM3, 0);
+	timer++;
+}
+
 void setup () {
     // LED on HyTiny F103 is PA1, LED on BluePill F103 is PC13
 //    gpio_set_mode(GPIOA, GPIO_MODE_OUTPUT_2_MHZ,
