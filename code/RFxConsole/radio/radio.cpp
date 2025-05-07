@@ -94,7 +94,7 @@ void setup () {
             
 
     printf("\n[radio]\n");
-
+/*
 	rcc_periph_clock_enable(RCC_GPIOA);				// Enable GPIOA clock
 	rcc_periph_clock_enable(RCC_AFIO);				// Enable AFIO clock
 	nvic_enable_irq(NVIC_EXTI2_IRQ);				// Enable EXTI2 interrupt
@@ -117,9 +117,9 @@ void setup () {
 	timer_enable_irq(TIM3, TIM_DIER_UIE);			// Interrupt each time count met
 	nvic_enable_irq(NVIC_TIM3_IRQ);					// Enable timer 3 interrupts
 	
-    rf.init(rf_nodeid, rf_group, rf_freq);
+//    rf.init(rf_nodeid, rf_group, rf_freq);
     //rf.encrypt("mysecret");
-    rf.txPower(16); // 0 = min .. 31 = max
+//    rf.txPower(16); // 0 = min .. 31 = max
 /*	
 	printf("RCC_APB2ENR=0x%04X\n", RCC_APB2ENR);
 	printf("GPIOA_CRL=0x%08X\n", GPIOA_CRL);
@@ -143,7 +143,7 @@ void setup () {
 
     printf("  Enter 't' to broadcast a test packet as node %d.\n", rf_nodeid);
     printf("  Listening for packets on %.1f MHz, group %d ...\n\n",
-            rf_freq * 0.1, rf_group);
+//            rf_freq * 0.1, rf_group);
 /*
      RCC_APB2ENR = 0x00000045;   //Enable AFIO, GPIOA and GPIOE                              
      GPIOA_CRL = 0x22220000;     //Set GPIOA 4 - 7 as 2MHz Push-pull outputs
@@ -184,7 +184,7 @@ void loop () {
     	flagT = false;
     }
 
-    int len = rf.receive(rxBuf, sizeof rxBuf);
+ //   int len = rf.receive(rxBuf, sizeof rxBuf);
     if (len >= 0 && len <= 72) {
         printf("rf69 %04X%02X%02X%02X%04X g%u i%u l=%u %u",
                 rf_freq, rf_group, rf.rssi, rf.lna, rf.afc,
